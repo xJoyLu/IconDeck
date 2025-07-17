@@ -1,0 +1,27 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f9f9f9;
+}
+h1 {
+  margin-bottom: 10px;
+}
+#icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 15px;
+}
+.icon-item {
+  text-align: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+.icon-item img {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 5px;
+}
+.icon-item:hover {
+  background-color: #eee;
+  border-radius: 8px;
+}

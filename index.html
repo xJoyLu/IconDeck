@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>图标库 - 批量选择开关 + 暗黑模式</title>
+<style>
+  :root {
+    --color-bg-light: #f0f0f3;
+    --color-bg-dark: #121212;
+    --color-text-light: #333;
+    --color-text-dark: #ddd;
+    --color-primary: #6c63ff;
+    --color-primary-hover: #574fd6;
+    --color-btn-bg-light: rgba(255,255,255,0.12);
+    --color-btn-bg-dark: rgba(255,255,255,0.05);
+    --color-btn-border-light: rgba(255,255,255,0.25);
+    --color-btn-border-dark: rgba(255,255,255,0.1);
+    --color-checkbox-bg-light: rgba(255,255,255,0.7);
+    --color-checkbox-bg-dark: rgba(255,255,255,0.15);
+  }
+
+  body {
+    margin: 0; padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(145deg, var(--color-bg-light), #dcdce6);
+    color: var(--color-text-light);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  body.dark {
+    background: var(--color-bg-dark);
+    color: var(--color-text-dark);
+  }
+  h1 {
+    margin-bottom: 1rem;
+  }
+  #top-bar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  #selected-count {
+    font-weight: bold;
+  }
+  button {
+    user-select: none;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 1rem;
+  }
+  #export-zip-btn {
+    background-color: var(--color-primary);
+    color: white;
+  }
+  #export-zip-btn:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+  }
+  #export-zip-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+
+  #toggle-batch-btn, #toggle-dark-btn {
+    background-color: var(--color-btn-bg-light);
+    color: var(--color-text-light);
+    border: 1px solid var(--color-btn-border-light);
+  }
+  #toggle-batch-btn:hover, #toggle-dark-btn:hover {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  body.dark #toggle-batch-btn,
+  body.dark #toggle-dark-btn {
+    background-color: var(--color-btn-bg-dark);
+    color: var(--color-text-dark);
+    border: 1px solid var(--color-btn-border-dark);
+  }
+  body.dark #toggle-batch-btn:hover,
+  body.dark #toggle-dark-btn:hover {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  #search {
+    width: 100%;
+    max-width: 480px;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    margin-bottom: 1rem;
+  }
+  #search:focus {
+    outline-color: var(--color-primary);
+  }
+  #filter-bar {
+    margin-bottom: 1rem;
+  }
+  .filter-btn {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 14px;
+    border: 1px solid var(--color-primary);
+    background: transparent;
+    color: var(--color-primary);
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--color-primary);
+    color: white;
+  }
+  #container {
+    flex-grow: 1;
+    outline: none;
+  }
+  section {
+    margin-bottom: 2rem;
+  }
+  section > h2 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+    gap: 1rem;
+  }
+  .card {
+    position: relative;
+    backdrop-filter: blur(12px);
+    background: var(--color-btn-bg-light);
+    border: 1px solid var(--color-btn-border-light);
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--color-text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  body.dark .card {
+    color: var(--color-text-dark);
+    background: var(--color-btn-bg-dark);
+    border-color: var(--color-btn-border-dark);
+    box-shadow: none;
+  }
+  .card:hover, .card:focus-visible {
+    outline: none;
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+  }
+  .card img {
+    width: 48px; height: 48px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+  }
+  .filename {
+    font-size: 0.85rem;
+    user-select: text;
+  }
+  .checkbox-wrapper {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--color-checkbox-bg-light);
+    border-radius: 12px;
+    padding: 2px 6px;
+    z-index: 10;
+    user-select: none;
+    display: none; /* 默认隐藏 */
+  }
+  body.dark .checkbox-wrapper {
+    background: var(--color-checkbox-bg-dark);
+  }
+  .checkbox-wrapper input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  /* 批量选择模式开启时，显示复选框 */
+  body.batch-select-mode .checkbox-wrapper {
+    display: block;
+  }
+
+  .no-results {
+    text-align: center;
+    font-style: italic;
+    margin-top: 2rem;
+    color: #888;
+  }
+
+</style>
+</head>
+<body>
+  <h1>图标库</h1>
+
+  <div id="top-bar" role="region" aria-label="操作栏" style="gap:1rem; display:flex; align-items:center; flex-wrap:wrap;">
+    <div id="selected-count" aria-live="polite">已选图标：0</div>
+    <button id="export-zip-btn" disabled aria-disabled="true" aria-label="导出选中图标为ZIP">导出选中图标 ZIP</button>
+    <button id="toggle-batch-btn" aria-pressed="false" aria-label="切换批量选择模式">开启批量选择</button>
+    <button id="toggle-dark-btn" aria-pressed="false" aria-label="切换暗黑模式">切换暗黑模式</button>
+  </div>
+
+  <input
+    type="search"
+    id="search"
+    placeholder="搜索图标或分类..."
+    aria-label="搜索图标或分类"
+    autocomplete="off"
+  />
+
+  <div id="filter-bar" role="region" aria-label="图标分类筛选"></div>
+
+  <div id="container" tabindex="0" aria-live="polite" aria-busy="true">加载中...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script>
+    const ICON_ROOT = './icons';
+    let iconData = null;
+    let activeCategoryFilter = null;
+    const container = document.getElementById('container');
+    const filterBar = document.getElementById('filter-bar');
+    const searchInput = document.getElementById('search');
+    const selectedCountEl = document.getElementById('selected-count');
+    const exportBtn = document.getElementById('export-zip-btn');
+    const toggleBatchBtn = document.getElementById('toggle-batch-btn');
+    const toggleDarkBtn = document.getElementById('toggle-dark-btn');
+    const body = document.body;
+
+    let batchSelectMode = false;
+    const selectedIcons = new Set();
+
+    // 读取系统偏好暗黑
+    function prefersDarkMode() {
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    // 应用暗黑模式
+    function applyDarkMode(isDark) {
+      if (isDark) {
+        body.classList.add('dark');
+        toggleDarkBtn.textContent = '切换亮色模式';
+        toggleDarkBtn.setAttribute('aria-pressed', 'true');
+      } else {
+        body.classList.remove('dark');
+        toggleDarkBtn.textContent = '切换暗黑模式';
+        toggleDarkBtn.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    // 切换批量选择模式
+    function toggleBatchSelect() {
+      batchSelectMode = !batchSelectMode;
+      if (batchSelectMode) {
+        body.classList.add('batch-select-mode');
+        toggleBatchBtn.textContent = '关闭批量选择';
+        toggleBatchBtn.setAttribute('aria-pressed', 'true');
+      } else {
+        body.classList.remove('batch-select-mode');
+        toggleBatchBtn.textContent = '开启批量选择';
+        toggleBatchBtn.setAttribute('aria-pressed', 'false');
+        // 清除所有选中
+        selectedIcons.clear();
+        updateSelectedCount();
+        // 取消所有复选框选中
+        document.querySelectorAll('.checkbox-wrapper input[type=checkbox]').forEach(cb => cb.checked = false);
+      }
+      updateSelectedCount();
+    }
+
+    function formatName(filename) {
+      const name = filename.replace(/\.[^/.]+$/, '');
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    function renderFilterBar() {
+      filterBar.innerHTML = '';
+      const allBtn = document.createElement('button');
+      allBtn.textContent = '全部';
+      allBtn.className = 'filter-btn' + (activeCategoryFilter === null ? ' active' : '');
+      allBtn.setAttribute('aria-pressed', activeCategoryFilter === null);
+      allBtn.addEventListener('click', () => {
+        activeCategoryFilter = null;
+        renderFilterBar();
+        renderIcons(searchInput.value);
+      });
+      filterBar.appendChild(allBtn);
+
+      for (const category of Object.keys(iconData.categories)) {
+        const btn = document.createElement('button');
+        btn.textContent = category;
+        btn.className = 'filter-btn' + (activeCategoryFilter === category ? ' active' : '');
+        btn.setAttribute('aria-pressed', activeCategoryFilter === category);
+        btn.addEventListener('click', () => {
+          activeCategoryFilter = category;
+          renderFilterBar();
+          renderIcons(searchInput.value);
+        });
+        filterBar.appendChild(btn);
+      }
+    }
+
+    function updateSelectedCount() {
+      selectedCountEl.textContent = `已选图标：${selectedIcons.size}`;
+      exportBtn.disabled = selectedIcons.size === 0 || !batchSelectMode;
+      exportBtn.setAttribute('aria-disabled', exportBtn.disabled);
+    }
+
+    function renderIcons(filter = '') {
+      container.setAttribute('aria-busy', 'true');
+      container.innerHTML = '';
+
+      const filterLower = filter.trim().toLowerCase();
+      let totalMatches = 0;
+
+      for (const [category, files] of Object.entries(iconData.categories)) {
+        if (activeCategoryFilter !== null && category !== activeCategoryFilter) continue;
+
+        const categoryMatch = category.toLowerCase().includes(filterLower);
+        const filteredFiles = categoryMatch
+          ? files
+          : files.filter((f) => f.toLowerCase().includes(filterLower));
+
+        if (filteredFiles.length === 0) continue;
+        totalMatches += filteredFiles.length;
+
+        const section = document.createElement('section');
+        const title = document.createElement('h2');
+        title.textContent = `${category}（${filteredFiles.length}）`;
+        section.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+
+        filteredFiles.forEach((file) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.tabIndex = 0;
+          card.setAttribute('role', 'button');
+          card.setAttribute('aria-label', `复制图标链接：${formatName(file)}`);
+
+          const img = document.createElement('img');
+          img.loading = 'lazy';
+          img.src = `${ICON_ROOT}/${category}/${file}`;
+          img.alt = formatName(file);
+
+          const label = document.createElement('div');
+          label.className = 'filename';
+          label.textContent = formatName(file);
+
+          const checkboxWrapper = document.createElement('div');
+          checkboxWrapper.className = 'checkbox-wrapper';
+
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.title = `选择图标：${formatName(file)}`;
+
+          const key = `${category}/${file}`;
+          checkbox.checked = selectedIcons.has(key);
+
+          checkbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              selectedIcons.add(key);
+            } else {
+              selectedIcons.delete(key);
+            }
+            updateSelectedCount();
+          });
+
+          checkboxWrapper.appendChild(checkbox);
+
+          card.appendChild(checkboxWrapper);
+          card.appendChild(img);
+          card.appendChild(label);
+
+          card.addEventListener('click', (e) => {
+            // 避免点击复选框时触发复制
+            if (e.target === checkbox) return;
+
+            const url = `${location.origin}/${ICON_ROOT}/${category}/${file}`;
+            navigator.clipboard.writeText(url).then(() => {
+              alert(`复制成功：${url}`);
+            });
+          });
+          card.addEventListener('keypress', (e
+) => {
+if (e.key === 'Enter') card.click();
+});
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+
+  if (totalMatches === 0) {
+    container.innerHTML = `<div class="no-results">未找到相关图标</div>`;
+  }
+
+  container.setAttribute('aria-busy', 'false');
+}
+
+function downloadSelectedAsZip() {
+  if (selectedIcons.size === 0) return;
+  const zip = new JSZip();
+  const promises = [];
+
+  selectedIcons.forEach(path => {
+    const url = `${ICON_ROOT}/${path}`;
+    const filename = path.split('/').pop();
+    const category = path.split('/')[0];
+    const promise = fetch(url)
+      .then(res => res.blob())
+      .then(blob => {
+        zip.folder(category).file(filename, blob);
+      });
+    promises.push(promise);
+  });
+
+  Promise.all(promises).then(() => {
+    zip.generateAsync({ type: 'blob' }).then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'icons.zip';
+      a.click();
+    });
+  });
+}
+
+toggleBatchBtn.addEventListener('click', toggleBatchSelect);
+toggleDarkBtn.addEventListener('click', () => {
+  applyDarkMode(!body.classList.contains('dark'));
+});
+exportBtn.addEventListener('click', downloadSelectedAsZip);
+searchInput.addEventListener('input', () => {
+  renderIcons(searchInput.value);
+});
+
+// 初始化
+fetch('icon-map.json')
+  .then(res => res.json())
+  .then(data => {
+    iconData = data;
+    renderFilterBar();
+    renderIcons();
+    // 默认暗黑判断
+    applyDarkMode(prefersDarkMode());
+  });
+</script> </body> </html>

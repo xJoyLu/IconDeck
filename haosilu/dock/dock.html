@@ -1,0 +1,116 @@
+<div class="ioui-content switch-container home-container sidebar_no container">
+<div class="ioui-main">
+<div class="content-wrap">
+<div class="content-layout">
+<div class="dock-container" id="dock-container" style="left: 50%;">
+<div class="dock" id="dock">
+<ul class="dock-icons">
+<!-- 这里添加您的图标 -->
+<li class="dock-icon-divider">
+<hr class="dock-divider" id="dock-divider" style="display: none">
+<!-- 添加分割线 -->
+</li>
+<li class="dock-icon" title="好思路导航">
+<a href="https://hao.si.lu" target="_blank">
+<img src="https://icons.xuzh.com/haosilu/favicon.png"
+alt="好思路导航">
+<span class="docktooltip">好思路导航</span>
+<!-- 添加标题元素 -->
+</a>
+</li>
+
+<li class="dock-icon" title="花瓣">
+<a href="https://huaban.com/follow" target="_blank">
+<img src="https://navw.cn/dahai/img/huaban.png" alt="花瓣">
+<span class="docktooltip">花瓣</span>
+</a>
+</li>
+
+<li class="dock-icon" title="可画设计">
+<a href="https://www.canva.cn/" target="_blank">
+<img src="https://navw.cn/dahai/img/canva.png"
+alt="可画设计">
+<span class="docktooltip">可画设计</span>
+</a>
+</li>
+<li class="dock-icon" title="喜马拉雅">
+<a href="https://www.ximalaya.com/" target="_blank">
+<img src="https://navw.cn/dahai/img/xima.png"
+alt="喜马拉雅">
+<span class="docktooltip">喜马拉雅</span>
+</a>
+</li>
+<li class="dock-icon" title="小红书">
+<a href="https://www.xiaohongshu.com/explore" target="_blank">
+<img src="https://navw.cn/dahai/img/xiaohongshu.png"
+alt="小红书">
+<span class="docktooltip">小红书</span>
+</a>
+</li>
+<li class="dock-icon" title="抖音">
+<a href="https://www.douyin.com/" target="_blank">
+<img src="https://navw.cn/dahai/img/douyin.png"
+alt="抖音">
+<span class="docktooltip">抖音</span>
+</a>
+</li>
+
+<!-- 其他应用图标 -->
+<li class="dock-icon-divider">
+<hr class="dock-divider">
+<!-- 添加分割线 -->
+</li>
+<li class="dock-icon add-app" title="添加应用">
+<img src="https://icons.xuzh.com/haosilu/add.webp"
+alt="添加应用">
+<span class="docktooltip">添加应用</span>
+</li>
+<li class="dock-icon close-dock" title="关闭">
+<img src="https://icons.xuzh.com/haosilu/close.webp"
+alt="关闭">
+<span class="docktooltip">折迭dock栏</span>
+</li>
+<li class="dock-icon" title="网站提交">
+<a href="/contribute.html"
+target="_blank">
+<img src="https://icons.xuzh.com/haosilu/submit.webp"
+alt="网站提交">
+<span class="docktooltip">网站提交</span>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="expand-dock" id="expand-dock" title="展开DOCK栏" style="display: none">
+<i class="iconfont icon-arrow-r"></i>
+</div>
+<!-- 添加应用的对话框 -->
+<div id="addAppModal" class="modal" style="display: none">
+<div class="dockmodal-content">
+<span class="close">×</span>
+<h2>添加应用</h2>
+<h5>添加后右键点击即可删除</h5>
+<h2></h2>
+<form id="appForm">
+<label for="appUrl">网址链接（必填）：</label>
+<input type="text" id="appUrl" name="appUrl" required="" placeholder="请填写网址链接"><br><br>
+<label for="appName">网站名称（必填）：</label>
+<input type="text" id="appName" name="appName" required="" placeholder="请填写网站名称"><br><br>
+<label for="appIcon">图标链接（非必填）：</label>
+<input type="text" id="appIcon" name="appIcon" placeholder="不填写链接自动获取网址图标"><br><br>
+<input type="submit" value="添加">
+</form>
+</div>
+</div>
+<!-- 删除应用对话框 -->
+<div id="customDialog" class="dialog" style="display: none">
+<div class="dialog-content">
+<p>确定删除该应用吗？</p>
+<button id="confirmDeleteBtn">确定</button>
+<button id="cancelDeleteBtn">取消</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
